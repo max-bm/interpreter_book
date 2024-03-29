@@ -1,6 +1,8 @@
-# Chapter 1: Lexing
+# Writing an Interpreter in Go - Notes
 
-## 1.1 Lexical Analysis
+## Chapter 1: Lexing
+
+### 1.1 Lexical Analysis
 
 - We need to represent source code in forms that are easier to work with - we're going to change it twice before evaluating it: `source code -> tokens -> abstract syntax tree`.
 - The first transformation, from source code to tokens, is called "lexical analysis" (or "lexing"). It's done by a lexer (or tokeniser, or scanner).
@@ -29,7 +31,7 @@
 - Whitespace characters are not considered when lexing the Monkey language (above), but are for some languages (e.g. Python).
 - A production-ready lexer might also attach the line number, column number and filename to a token - for example, this can make error messages more useful.
 
-## 1.2 Defining our Tokens
+### 1.2 Defining our Tokens
 
 - We have to define the tokens our lexer is going to output - we'll start with just a few and add more when extending the lexer. The subset of the Monkey language we'll start with looks like
 
@@ -53,7 +55,7 @@
 - We defined the `TokenType` to be a string because it's simple to understand, but using an `int` or a `byte` could lead to better performance.
 - We define the possible `TokenType`s as constants, with two special types: `ILLEGAL` and `EOF`.
 
-## 1.3 The Lexer
+### 1.3 The Lexer
 
 - The lexer we write will take source code as input and output the tokens that represent the code.
 - It will go through its inputs and output the next token it recognises - it doesn't need to buffer or save tokens, since there will only be one method called `NextToken`.
@@ -67,4 +69,16 @@
 - The `isLetter` function has a significant impact on the language our interpreter can parse for such a small function. For example, we treat `_` as a letter and allow it in identifiers and keywords.
 - When reading identifiers, we need to be able to tell user-defined identifiers apart from language keywords, i.e. we need a function that returns the correct `TokenType` - we define it in the `token` package
 
-## 1.4 Extending our Token Set and Lexer
+### 1.4 Extending our Token Set and Lexer
+
+- Extending the lexer for new single-character special characters (e.g. `-`, `*`, etc.) and for new keywords is trivial. However, extending it for two-character special characters (e.g. `==` ans `!=`) is not. The solution is to "peak ahead" when we encounter characters that could indicate a two-character special character.
+
+### 1.5 Start of a REPL
+
+- Interpreted languages (like Monkey) have a REPL, or "Read Eval Print Loop". It is sometimes called "console" or "interactive mode".
+- The REPL reads input, sends it to the interpreter for evaluation, prints the result/output of the interpreter and starts again - Read, Eval, Print, Loop.
+- We don't know how to fully "Eval" Monkey yet - we only have one part of that process so far: we can tokenize Monkey source code.
+- The REPL (in its current state) reads input from the source until it encounters a newline (i.e. it reads the line we just gave as input), passes it to a new instance of our lexer, and prints all the tokens the lexer returns until it encounters EOF (or the end of the current line, in this case).
+- In the `main.go` file we welcome the user to the REPL and start it.
+
+## Chapter 2: Parsing
